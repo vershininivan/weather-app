@@ -4,20 +4,20 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.vershininivan.utils.getJsonDataFromAsset
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import com.vershininivan.weather.apadters.WeatherCardAdapter
+import com.vershininivan.weather.data.OneCall
 import com.vershininivan.weather.items.FavoriteListItem
 import com.vershininivan.weather.items.WeatherCardForecastItem
 import com.vershininivan.weather.items.WeatherCardItem
 
 class MainActivity : AppCompatActivity() {
 
-  private val cards: MutableList<WeatherCardItem> = ArrayList()
-  private val forecast_1: MutableList<WeatherCardForecastItem> = ArrayList()
-  private val forecast_2: MutableList<WeatherCardForecastItem> = ArrayList()
+  private val cardList: MutableList<WeatherCardItem> = ArrayList()
+  private val forecastList: MutableList<WeatherCardForecastItem> = ArrayList()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -30,33 +30,71 @@ class MainActivity : AppCompatActivity() {
       startActivity(intent)
     }
 
-    var favoriteLis = intent.getIntArrayExtra("favorites")
+    val favoriteList = intent.getParcelableArrayListExtra<FavoriteListItem>("favorites")
+    if (favoriteList != null) {
+      setFavoriteCity(favoriteList)
+    }
 
-    setInitialData()
-    initRecycler()
+    RecyclerManager().initRecycler()
   }
 
-  private fun setInitialData() {
-    forecast_1.add(WeatherCardForecastItem("Вторник", "4", "12", "l10n"))
-    forecast_1.add(WeatherCardForecastItem("Среда", "4", "12", "l10n"))
-    forecast_1.add(WeatherCardForecastItem("Четверг", "4", "12", "l10n"))
-    forecast_1.add(WeatherCardForecastItem("Пятница", "4", "12", "l10n"))
-    forecast_1.add(WeatherCardForecastItem("Суббота", "4", "12", "l10n"))
-    forecast_1.add(WeatherCardForecastItem("Воскресенье", "4", "12", "l10n"))
-    forecast_2.add(WeatherCardForecastItem("Вторник", "4", "12", "l10n"))
-    forecast_2.add(WeatherCardForecastItem("Среда", "4", "12", "l10n"))
-    forecast_2.add(WeatherCardForecastItem("Четверг", "4", "12", "l10n"))
-    forecast_2.add(WeatherCardForecastItem("Пятница", "4", "12", "l10n"))
-    forecast_2.add(WeatherCardForecastItem("Суббота", "4", "12", "l10n"))
-    forecast_2.add(WeatherCardForecastItem("Воскресенье", "4", "12", "l10n"))
-    cards.add(WeatherCardItem("Иваново", "10°", "Солнечно", forecast_1))
-    cards.add(WeatherCardItem("Москва", "10°", "Солнечно", forecast_2))
-    cards.add(WeatherCardItem("Санкт-Петербург", "10°", "Солнечно", forecast_1))
+  private fun setFavoriteCity(favoriteListItem: ArrayList<FavoriteListItem>) {
+    for (item in favoriteListItem) {
+      request(getForecastWeatherData(item.lat, item.lon), item.city_ascii)
+    }
   }
 
-  private fun initRecycler() {
-    val cardRecycler: RecyclerView = findViewById(R.id.weather_card_recycler)
-    val adapterCurrent = WeatherCardAdapter(cards)
-    cardRecycler.adapter = adapterCurrent
+  private fun request(url: String, city: String?) {
+    url.httpGet().responseObject(OneCall.Deserializer()) { _, _, result ->
+      when (result) {
+        is Result.Failure -> {
+          Toast.makeText(this@MainActivity, result.getException().message,
+              Toast.LENGTH_SHORT).show()
+        }
+        is Result.Success -> {
+          val forecast = result.component1()
+          if (forecast != null) {
+            for ((index, day) in forecast.daily.withIndex()) {
+              if (index != 0) {
+                forecastList.add(WeatherCardForecastItem(day.dt.toString(), day.temp.min.toString(),
+                    day.temp.max.toString(), day.weather.first().icon))
+              }
+            }
+            cardList.add(WeatherCardItem(city, forecast.current.temp.toInt().toString(),
+                forecast.current.weather.first().description, forecastList))
+            forecastList.clear()
+            RecyclerManager().update()
+          }
+        }
+      }
+    }
   }
+
+  private fun getForecastWeatherData(
+      lat: Double,
+      lon: Double,
+      appid: String = "cf387cc3efe8d90d7a2a0dbd64a97e64",
+      units: String = "metric",
+      lang: String = "ru"): String {
+    return "https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${appid}&exclude=minutely,hourly,alerts&units=${units}&lang=${lang}"
+  }
+
+  inner class RecyclerManager() {
+    private val cardRecycler: RecyclerView = findViewById(R.id.weather_card_recycler)
+    private val adapterCurrent = WeatherCardAdapter(cardList)
+
+    fun initRecycler() {
+      cardRecycler.adapter = adapterCurrent
+    }
+
+    fun update() {
+      cardRecycler.adapter!!.notifyDataSetChanged()
+    }
+  }
+
+//  private fun initRecycler() {
+//    val cardRecycler: RecyclerView = findViewById(R.id.weather_card_recycler)
+//    val adapterCurrent = WeatherCardAdapter(cards)
+//    cardRecycler.adapter = adapterCurrent
+//  }
 }

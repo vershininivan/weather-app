@@ -33,7 +33,7 @@ class SettingsActivity: AppCompatActivity() {
                     city.city,
                     city.city_ascii,
                     city.country,
-                    city.lot,
+                    city.lat,
                     city.lon
                 )
             )
