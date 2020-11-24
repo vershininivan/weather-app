@@ -5,7 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.vershininivan.utils.getJsonDataFromAsset
 import com.vershininivan.weather.apadters.WeatherCardAdapter
+import com.vershininivan.weather.items.FavoriteListItem
 import com.vershininivan.weather.items.WeatherCardForecastItem
 import com.vershininivan.weather.items.WeatherCardItem
 
@@ -25,6 +29,8 @@ class MainActivity : AppCompatActivity() {
       val intent = Intent(this, SettingsActivity::class.java)
       startActivity(intent)
     }
+
+    var favoriteLis = intent.getIntArrayExtra("favorites")
 
     setInitialData()
     initRecycler()
