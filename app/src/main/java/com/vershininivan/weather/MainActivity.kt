@@ -1,7 +1,9 @@
 package com.vershininivan.weather
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.vershininivan.weather.apadters.WeatherCardAdapter
 import com.vershininivan.weather.items.WeatherCardForecastItem
@@ -16,6 +18,13 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+
+    val setting: ImageButton = findViewById(R.id.settings)
+
+    setting.setOnClickListener {
+      val intent = Intent(this, SettingsActivity::class.java)
+      startActivity(intent)
+    }
 
     setInitialData()
     initRecycler()

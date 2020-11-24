@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.vershininivan.weather.R
 import com.vershininivan.weather.items.WeatherCardForecastItem
 
-class WeatherCardForecastAdapter(var items: List<WeatherCardForecastItem>) :
+class WeatherCardForecastAdapter(private var items: List<WeatherCardForecastItem>) :
     RecyclerView.Adapter<WeatherCardForecastAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(

@@ -63,21 +63,4 @@ class WeatherCardAdapter(var items: List<WeatherCardItem>) :
 
     }
 
-//    override fun onBindViewHolder(
-//        holder: ViewHolder,
-//        position: Int
-//    ) {
-//        val parent = parents[position]
-//        holder.textView.text = parent.title
-//        val childLayoutManager =
-//            LinearLayoutManager(holder.recyclerView.context, LinearLayout.HORIZONTAL, false)
-//        childLayoutManager.initialPrefetchItemCount = 4
-//        holder.recyclerView.apply {
-//            layoutManager = childLayoutManager
-//            adapter = ChildAdapter(parent.children)
-//            setRecycledViewPool(viewPool)
-//        }
-//
-//    }
-
 }

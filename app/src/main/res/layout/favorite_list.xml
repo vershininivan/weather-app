@@ -4,23 +4,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:gravity="center_vertical"
-        tools:ignore="MissingConstraints"
-        android:text="Поиск"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/favorite"
+        android:id="@+id/city"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layoutManager="LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
         tools:ignore="MissingConstraints"
-        />
+        android:text="City"
+        android:padding="5dp"
+        android:textSize="20sp"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@null"
+        android:src="@drawable/baseline_delete_forever_white_24dp"
+        app:layout_constraintEnd_toEndOf="@+id/city"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
