@@ -1,6 +1,6 @@
 package com.vershininivan.weather.items
 
-data class WeatherCardItem (
+data class WeatherCardItem(
     val city: String?,
     val temp: String,
     val description: String,

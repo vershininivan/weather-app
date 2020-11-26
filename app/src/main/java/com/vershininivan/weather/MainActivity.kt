@@ -39,12 +39,12 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun setFavoriteCity(favoriteListItem: ArrayList<FavoriteListItem>) {
-    for (item in favoriteListItem) {
-      request(getForecastWeatherData(item.lat, item.lon), item.city_ascii)
+    for ((index, item) in favoriteListItem.withIndex()) {
+      request(getForecastWeatherData(item.lat, item.lon), item.city_ascii, index)
     }
   }
 
-  private fun request(url: String, city: String?) {
+  private fun request(url: String, city: String?, cardIndex: Int) {
     url.httpGet().responseObject(OneCall.Deserializer()) { _, _, result ->
       when (result) {
         is Result.Failure -> {
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
               }
             }
             cardList.add(WeatherCardItem(city, forecast.current.temp.toInt().toString(),
-                forecast.current.weather.first().description, forecastList))
+                forecast.current.weather.first().description, ArrayList(forecastList)))
             forecastList.clear()
             RecyclerManager().update()
           }
